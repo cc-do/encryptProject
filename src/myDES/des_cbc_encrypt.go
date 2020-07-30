@@ -1,11 +1,11 @@
 package myDES
 
 import (
-	"bytes"
 	"crypto/cipher"
 	"crypto/des"
 	"fmt"
 	"log"
+	"utils"
 )
 
 /*
@@ -95,7 +95,7 @@ func NewCBCDecrypter(b Block, iv []byte) BlockMode
 */
 
 //输入明文，密钥，并输出密文
-func DesCbcEncrypt(src, key []byte) []byte {
+func DesCbcEncrypt(src, key, iv []byte) []byte {
 	fmt.Printf("加密开始，输入的数据为：%s\n", src)
 	//1. 创建并返回一个使用 DES算法的 cipher.Block接口
 	block, err := des.NewCipher(key)
@@ -105,36 +105,15 @@ func DesCbcEncrypt(src, key []byte) []byte {
 	fmt.Println("block size : ", block.BlockSize())
 
 	//2. 对最后一个明文分组进行数据填充
-	src = PaddingInfo(src, block.BlockSize())
+	src = utils.PaddingInfo(src, block.BlockSize())
 
 	//3. 引入CBC模式
-	iv := bytes.Repeat([]byte("1"), block.BlockSize())
+	//iv := bytes.Repeat([]byte("1"), block.BlockSize())
 	bm := cipher.NewCBCEncrypter(block, iv)
 
 	//4、加密操作
 	bm.CryptBlocks(src /*加密后的密文*/, src /*明文*/)
 
 	fmt.Printf("加密结束，输出的数据为：%x\n", src)
-	return src
-}
-
-//填充函数，输入明文，分组长度，输出：填充后的数据
-func PaddingInfo(src []byte, blockSize int) []byte {
-	//1、得到明文长度
-	length := len(src)
-
-	//2、需要填充的数量
-	remains := length % blockSize
-	paddingNumber := blockSize - remains
-
-	//3、把填充的数值转换为字符
-	s1 := byte(paddingNumber)
-
-	//4、把字符拼成数组
-	s2 := bytes.Repeat([]byte{s1}, paddingNumber)
-
-	//5、把拼成的数组追加到src后面
-	src = append(src, s2...)
-
 	return src
 }

@@ -3,6 +3,7 @@ package test
 import (
 	"fmt"
 	"io"
+	"myAES"
 	"myDES"
 	"os"
 	"testing"
@@ -11,11 +12,12 @@ import (
 func TestDes(t *testing.T) {
 	src := []byte("12345678")
 	key := []byte("12345678")
+	iv := []byte("11111111")
 
-	dst := myDES.DesCbcEncrypt(src, key)
+	dst := myDES.DesCbcEncrypt(src, key, iv)
 	fmt.Printf("cipherData : %x\n", dst)
 
-	plainText := myDES.DesCbcDecrypt(dst, key)
+	plainText := myDES.DesCbcDecrypt(dst, key, iv)
 	fmt.Printf("plainText str : %s\n", plainText)
 	fmt.Printf("plainText hex : %x\n", plainText)
 }
@@ -54,4 +56,12 @@ func TestFile(t *testing.T) {
 
 func TestBinary(t *testing.T) {
 
+}
+
+func TestAES(t *testing.T) {
+	src := []byte("123456")
+	key := []byte("1234567890123456")
+	iv := []byte("1234567890123456")
+	dst := myAES.AesCbcEncrypt(src, key, iv)
+	fmt.Printf("%x", dst)
 }
